@@ -6,7 +6,8 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.preprocessing import LabelEncoder
 
-# First classifier
+######################################### Classifier 1 #########################################
+
 data_c1 = pd.read_csv("implicit_hate_v1_stg0_posts.tsv", delimiter='\t')
 
 # Encode the labels
@@ -50,7 +51,8 @@ print()
 print('----------------------------------------')
 print()
 
-# Second classifier
+######################################### Classifier 2 #########################################
+
 data_c2 = pd.read_csv("implicit_hate_v1_stg1_posts.tsv", delimiter='\t')
 
 # Remove rows with label 'not_hate'
@@ -97,7 +99,8 @@ print()
 print('----------------------------------------')
 print()
 
-# Third classifier
+######################################### Classifier 3 #########################################
+
 data_c3 = pd.read_csv("implicit_hate_v1_stg2_posts.tsv", delimiter='\t')
 
 # Encode the labels
