@@ -30,7 +30,7 @@ class HateSpeechDataset(Dataset):
 def compute_metrics(pred):
     labels = pred.label_ids
     preds = pred.predictions.argmax(-1)
-    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='binary')
+    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds)
     acc = accuracy_score(labels, preds)
     return {
         'accuracy': acc,
@@ -56,8 +56,8 @@ y_1 = data_1['hate_or_not_hate_encoded']  # Labels for the first model
 X_train_1, X_test_1, y_train_1, y_test_1 = train_test_split(X_1, y_1, test_size=0.2, random_state=42)
 
 # Tokenize the training and testing data
-train_encodings_1 = bert_tokenizer(X_train_1.tolist(), truncation=True, padding=True, max_length=128, return_tensors="pt")
-test_encodings_1 = bert_tokenizer(X_test_1.tolist(), truncation=True, padding=True, max_length=128, return_tensors="pt")
+train_encodings_1 = bert_tokenizer(X_train_1.tolist(), truncation=True, padding=True, return_tensors="pt")
+test_encodings_1 = bert_tokenizer(X_test_1.tolist(), truncation=True, padding=True, return_tensors="pt")
 
 # Create datasets
 train_dataset_1 = HateSpeechDataset(train_encodings_1, y_train_1)
@@ -107,8 +107,8 @@ y_2 = data_2['implicit_or_explicit_encoded']  # Labels for the second model
 X_train_2, X_test_2, y_train_2, y_test_2 = train_test_split(X_2, y_2, test_size=0.2, random_state=42)
 
 # Tokenize the training and testing data
-train_encodings_2 = bert_tokenizer(X_train_2.tolist(), truncation=True, padding=True, max_length=128, return_tensors="pt")
-test_encodings_2 = bert_tokenizer(X_test_2.tolist(), truncation=True, padding=True, max_length=128, return_tensors="pt")
+train_encodings_2 = bert_tokenizer(X_train_2.tolist(), truncation=True, padding=True, return_tensors="pt")
+test_encodings_2 = bert_tokenizer(X_test_2.tolist(), truncation=True, padding=True, return_tensors="pt")
 
 # Create datasets
 train_dataset_2 = HateSpeechDataset(train_encodings_2, y_train_2)
@@ -117,13 +117,13 @@ test_dataset_2 = HateSpeechDataset(test_encodings_2, y_test_2)
 model_2 = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=len(label_encoder_hate_type.classes_))
 
 training_args = TrainingArguments(
-    output_dir='./results',  # Output directory for model checkpoints
+    output_dir='./results_second',  # Output directory for model checkpoints
     num_train_epochs=3,  # Number of epochs (adjust based on your dataset size and needs)
     per_device_train_batch_size=8,  # Batch size for training
     per_device_eval_batch_size=8,  # Batch size for evaluation
     warmup_steps=500,  # Number of warmup steps for learning rate scheduler
     weight_decay=0.01,  # Strength of weight decay
-    logging_dir='./logs',  # Directory for storing logs
+    logging_dir='./logs_second',  # Directory for storing logs
 )
 
 trainer_2 = Trainer(
@@ -157,8 +157,8 @@ y_3 = data_3['implicit_types_encoded']  # Labels for the third model
 X_train_3, X_test_3, y_train_3, y_test_3 = train_test_split(X_3, y_3, test_size=0.2, random_state=42)
 
 # Tokenize the training and testing data
-train_encodings_3 = bert_tokenizer(X_train_3.tolist(), truncation=True, padding=True, max_length=128, return_tensors="pt")
-test_encodings_3 = bert_tokenizer(X_test_3.tolist(), truncation=True, padding=True, max_length=128, return_tensors="pt")
+train_encodings_3 = bert_tokenizer(X_train_3.tolist(), truncation=True, padding=True, return_tensors="pt")
+test_encodings_3 = bert_tokenizer(X_test_3.tolist(), truncation=True, padding=True, return_tensors="pt")
 
 # Create datasets
 train_dataset_3 = HateSpeechDataset(train_encodings_3, y_train_3)
@@ -167,13 +167,13 @@ test_dataset_3 = HateSpeechDataset(test_encodings_3, y_test_3)
 model_3 = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=len(label_encoder_implicit_type.classes_))
 
 training_args = TrainingArguments(
-    output_dir='./results',  # Output directory for model checkpoints
+    output_dir='./results_third',  # Output directory for model checkpoints
     num_train_epochs=3,  # Number of epochs (adjust based on your dataset size and needs)
     per_device_train_batch_size=8,  # Batch size for training
     per_device_eval_batch_size=8,  # Batch size for evaluation
     warmup_steps=500,  # Number of warmup steps for learning rate scheduler
     weight_decay=0.01,  # Strength of weight decay
-    logging_dir='./logs',  # Directory for storing logs
+    logging_dir='./logs_third',  # Directory for storing logs
 )
 
 trainer_3 = Trainer(
