@@ -1,5 +1,6 @@
 import pandas as pd
 import torch
+import time
 
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
@@ -10,12 +11,14 @@ from transformers import BertTokenizer, BertForSequenceClassification, TrainingA
 
 class SequentialHateSpeechDataset(Dataset):
     def __init__(self, encodings, labels):
-        self.encodings = encodings
+        # Move encodings to GPU if available
+        self.encodings = {k: v.to(torch.device("mps")) for k, v in encodings.items()} if torch.backends.mps.is_available() else encodings
         self.labels = labels
 
     def __getitem__(self, idx):
         item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
-        item['labels'] = torch.tensor(self.labels.iloc[idx])
+        # Move labels to GPU if available
+        item['labels'] = torch.tensor(self.labels.iloc[idx]).to(torch.device("mps")) if torch.backends.mps.is_available() else torch.tensor(self.labels.iloc[idx])
         return item
 
     def __len__(self):
@@ -35,6 +38,9 @@ def compute_metrics(pred):
     }
 
 
+# Capture the start time
+start_time = time.time()
+
 # Load the dataset
 data = pd.read_csv('implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
 
@@ -43,6 +49,7 @@ data = pd.read_csv('implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
 # Encode the 'hate_or_not_hate' labels
 label_encoder_hate = LabelEncoder()
 data['hate_or_not_hate_encoded'] = label_encoder_hate.fit_transform(data['hate_or_not_hate'])
+data.reset_index(drop=True, inplace=True)
 
 # For simplicity, let's focus on the first classification task: hate_or_not_hate
 X = data['post']
@@ -50,6 +57,8 @@ y = data['hate_or_not_hate_encoded']
 
 # Split data for training and testing
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+y_train.reset_index(drop=True, inplace=True)
+y_test.reset_index(drop=True, inplace=True)
 
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 train_encodings = bert_tokenizer(X_train.tolist(), truncation=True, padding=True, return_tensors="pt")
@@ -59,6 +68,10 @@ train_dataset = SequentialHateSpeechDataset(train_encodings, y_train)
 test_dataset = SequentialHateSpeechDataset(test_encodings, y_test)
 
 model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=len(label_encoder_hate.classes_))
+
+# Move model to GPU if available
+if torch.backends.mps.is_available():
+    model.to(torch.device("mps"))
 
 training_args = TrainingArguments(
     output_dir='./results',
@@ -108,12 +121,15 @@ data['hate_pred_text'] = data['hate_or_not_hate_pred'].apply(lambda x: 'HATE' if
 
 # Concatenate this prediction text with the original post
 data['post_with_pred'] = data['hate_pred_text'] + " " + data['post']
+data.reset_index(drop=True, inplace=True)
 
 X_next = data['post_with_pred']
 y_next = data['implicit_or_explicit_encoded']
 
 # Split data for the second task
 X_train_next, X_test_next, y_train_next, y_test_next = train_test_split(X_next, y_next, test_size=0.2, random_state=42)
+y_train_next.reset_index(drop=True, inplace=True)
+y_test_next.reset_index(drop=True, inplace=True)
 
 # Tokenize the data for the second task
 train_encodings_next = bert_tokenizer(X_train_next.tolist(), truncation=True, padding=True, return_tensors="pt")
@@ -124,6 +140,10 @@ train_dataset_next = SequentialHateSpeechDataset(train_encodings_next, y_train_n
 test_dataset_next = SequentialHateSpeechDataset(test_encodings_next, y_test_next)
 
 model_next = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=len(label_encoder_implicit.classes_))
+
+# Move model to GPU if available
+if torch.backends.mps.is_available():
+    model_next.to(torch.device("mps"))
 
 training_args_next = TrainingArguments(
     output_dir='./results_second',
@@ -169,12 +189,15 @@ data['implicit_explicit_pred_text'] = data['implicit_or_explicit_pred'].apply(la
 
 # Concatenate this prediction text with the original post (already includes first task's predictions)
 data['post_with_preds'] = data['post_with_pred'] + " " + data['implicit_explicit_pred_text']
+data.reset_index(drop=True, inplace=True)
 
 X_third = data['post_with_preds']
 y_third = data['implicit_class_encoded']
 
 # Split data for the third task
 X_train_third, X_test_third, y_train_third, y_test_third = train_test_split(X_third, y_third, test_size=0.2, random_state=42)
+y_train_third.reset_index(drop=True, inplace=True)
+y_test_third.reset_index(drop=True, inplace=True)
 
 # Tokenize the data for the third task
 train_encodings_third = bert_tokenizer(X_train_third.tolist(), truncation=True, padding=True, return_tensors="pt")
@@ -185,6 +208,10 @@ train_dataset_third = SequentialHateSpeechDataset(train_encodings_third, y_train
 test_dataset_third = SequentialHateSpeechDataset(test_encodings_third, y_test_third)
 
 model_third = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=len(label_encoder_implicit_class.classes_))
+
+# Move model to GPU if available
+if torch.backends.mps.is_available():
+    model_third.to(torch.device("mps"))
 
 training_args_third = TrainingArguments(
     output_dir='./results_third',
@@ -211,3 +238,15 @@ evaluation_results_third = trainer_third.evaluate()
 
 # Print the evaluation metrics
 print("Evaluation Results for Implicit Hate Types:", evaluation_results_third)
+
+# Place this line at the statement you're interested in
+elapsed_time = time.time() - start_time
+
+# Calculate hours, minutes, and seconds
+hours, remainder = divmod(elapsed_time, 3600)
+minutes, seconds = divmod(remainder, 60)
+
+# Format the time as a string
+formatted_time = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+
+print(f"It took {formatted_time} (hh:mm:ss) for the chained BERT classifier.")
