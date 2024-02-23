@@ -114,7 +114,7 @@ data['hate_or_not_hate_pred'] = predicted_labels
 
 # Encode the 'implicit_or_explicit' labels for the next task
 label_encoder_implicit = LabelEncoder()
-data['implicit_or_explicit_encoded'] = label_encoder_implicit.fit_transform(data['implicit_or_explicit'].fillna('unknown'))
+data['implicit_or_explicit_encoded'] = label_encoder_implicit.fit_transform(data['implicit_or_explicit'].dropna())
 
 # Convert numeric predictions into textual representation
 # Assuming '0' for 'not hate' and '1' for 'hate'
@@ -183,7 +183,7 @@ data['implicit_or_explicit_pred'] = label_encoder_implicit.inverse_transform(pre
 
 # Encode the 'implicit_class' labels for the third task
 label_encoder_implicit_class = LabelEncoder()
-data['implicit_class_encoded'] = label_encoder_implicit_class.fit_transform(data['implicit_class'].fillna('unknown'))
+data['implicit_class_encoded'] = label_encoder_implicit_class.fit_transform(data['implicit_class'].dropna())
 
 # Convert the second task's predictions into a textual representation
 data['implicit_explicit_pred_text'] = data['implicit_or_explicit_pred'].apply(lambda x: str(x).upper())
