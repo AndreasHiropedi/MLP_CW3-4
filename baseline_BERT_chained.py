@@ -17,8 +17,9 @@ class SequentialHateSpeechDataset(Dataset):
 
     def __getitem__(self, idx):
         item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
-        # Move labels to GPU if available
-        item['labels'] = torch.tensor(self.labels.iloc[idx]).to(torch.device("mps")) if torch.backends.mps.is_available() else torch.tensor(self.labels.iloc[idx])
+        # Convert labels to tensor before moving to GPU/MPS
+        label_tensor = torch.tensor(self.labels[idx])
+        item['labels'] = label_tensor.to(torch.device("mps")) if torch.backends.mps.is_available() else label_tensor
         return item
 
     def __len__(self):
