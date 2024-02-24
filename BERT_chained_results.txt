@@ -1,0 +1,15 @@
+Evaluation Results for Hate versus Not Hate: {'eval_loss': 0.7361503839492798, 'eval_accuracy': 0.814922480620155,
+'eval_f1': array([0.72694782, 0.86002199]), 'eval_precision': array([0.74560117, 0.84913169]),
+'eval_recall': array([0.70920502, 0.87119525]), 'eval_runtime': 42.6921,
+'eval_samples_per_second': 96.692, 'eval_steps_per_second': 12.087, 'epoch': 3.0}
+
+Evaluation Results for Implicit versus Explicit: {'eval_loss': 0.4651794135570526, 'eval_accuracy': 0.8727891156462585,
+'eval_f1': array([0.48199446, 0.92749128]), 'eval_precision': array([0.52095808, 0.91788181]),
+'eval_recall': array([0.44845361, 0.93730408]), 'eval_runtime': 29.5118, 'eval_samples_per_second': 49.811,
+'eval_steps_per_second': 6.235, 'epoch': 3.0}
+
+Evaluation Results for Implicit Hate Types: {'eval_loss': 1.2291584014892578, 'eval_accuracy': 0.6381789137380192,
+'eval_f1': array([0.57805907, 0.64797508, 0.62305296, 0.35294118, 0.61276596, 0.70454545, 0.69354839]),
+'eval_precision': array([0.59051724, 0.67532468, 0.66225166, 0.5, 0.58536585, 0.69402985, 0.66563467]),
+'eval_recall': array([0.5661157 , 0.62275449, 0.58823529, 0.27272727, 0.64285714, 0.71538462, 0.72390572]),
+'eval_runtime': 26.3305, 'eval_samples_per_second': 47.549, 'eval_steps_per_second': 5.963, 'epoch': 3.0}

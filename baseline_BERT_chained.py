@@ -114,7 +114,7 @@ data['hate_or_not_hate_pred'] = predicted_labels
 
 # Encode the 'implicit_or_explicit' labels for the next task
 label_encoder_implicit = LabelEncoder()
-data['implicit_or_explicit_encoded'] = label_encoder_implicit.fit_transform(data['implicit_or_explicit'].dropna())
+data['implicit_or_explicit_encoded'] = label_encoder_implicit.fit_transform(data['implicit_or_explicit'].fillna('unknown'))
 
 # Convert numeric predictions into textual representation
 # Assuming '0' for 'not hate' and '1' for 'hate'
@@ -124,8 +124,15 @@ data['hate_pred_text'] = data['hate_or_not_hate_pred'].apply(lambda x: 'HATE' if
 data['post_with_pred'] = data['hate_pred_text'] + " " + data['post']
 data.reset_index(drop=True, inplace=True)
 
-X_next = data['post_with_pred']
-y_next = data['implicit_or_explicit_encoded']
+# Assume 'unknown' is encoded to a specific value, find that value
+unknown_label_value = label_encoder_implicit.transform(['unknown'])[0]
+
+# Filter out rows where 'implicit_or_explicit_encoded' is not equal to the 'unknown' label value
+filtered_data = data[data['implicit_or_explicit_encoded'] != unknown_label_value]
+
+# Now, use 'filtered_data' for the rest of the steps in your second classifier
+X_next = filtered_data['post_with_pred']
+y_next = filtered_data['implicit_or_explicit_encoded']
 
 # Split data for the second task
 X_train_next, X_test_next, y_train_next, y_test_next = train_test_split(X_next, y_next, test_size=0.2, random_state=42)
@@ -183,7 +190,7 @@ data['implicit_or_explicit_pred'] = label_encoder_implicit.inverse_transform(pre
 
 # Encode the 'implicit_class' labels for the third task
 label_encoder_implicit_class = LabelEncoder()
-data['implicit_class_encoded'] = label_encoder_implicit_class.fit_transform(data['implicit_class'].dropna())
+data['implicit_class_encoded'] = label_encoder_implicit_class.fit_transform(data['implicit_class'].fillna('unknown'))
 
 # Convert the second task's predictions into a textual representation
 data['implicit_explicit_pred_text'] = data['implicit_or_explicit_pred'].apply(lambda x: str(x).upper())
@@ -192,8 +199,15 @@ data['implicit_explicit_pred_text'] = data['implicit_or_explicit_pred'].apply(la
 data['post_with_preds'] = data['post_with_pred'] + " " + data['implicit_explicit_pred_text']
 data.reset_index(drop=True, inplace=True)
 
-X_third = data['post_with_preds']
-y_third = data['implicit_class_encoded']
+# Assume 'unknown' is encoded to a specific value, find that value for 'implicit_class'
+unknown_class_value = label_encoder_implicit_class.transform(['unknown'])[0]
+
+# Filter out rows where 'implicit_class_encoded' is not equal to the 'unknown' label value
+filtered_data_third = data[data['implicit_class_encoded'] != unknown_class_value]
+
+# Use 'filtered_data_third' for the rest of the steps in your third classifier
+X_third = filtered_data_third['post_with_preds']
+y_third = filtered_data_third['implicit_class_encoded']
 
 # Split data for the third task
 X_train_third, X_test_third, y_train_third, y_test_third = train_test_split(X_third, y_third, test_size=0.2, random_state=42)
