@@ -30,15 +30,21 @@ def augment_dataframe_for_class(df, class_name, class_value, target_count, text_
     # Filter data for the specific class
     class_data = df[df[class_name] == class_value]
 
+    amount_of_data = len(class_data)
+
     print(f'Augmenting {class_value} data ...')
 
     augmented_rows = []
-    while len(augmented_rows) < target_count - len(class_data):
+    rows_count = 0
+    while len(augmented_rows) < target_count - len(class_data) and rows_count <= amount_of_data:
         for _, row in class_data.iterrows():
             if len(augmented_rows) >= target_count - len(class_data):
                 break
+            rows_count += 1
             original_text = row[text_column]
             back_translated_text = back_translate(original_text)
+            if class_data['post'].isin([back_translated_text]).any():
+                continue
             new_row = row.copy()
             new_row[text_column] = back_translated_text
             augmented_rows.append(new_row)
@@ -52,18 +58,14 @@ def augment_dataframe_for_class(df, class_name, class_value, target_count, text_
 start_time = time.time()
 
 # Load the dataset
-data = pd.read_csv('augmented_data_1.tsv', delimiter='\t')
+data = pd.read_csv('new_augmented_data.tsv', delimiter='\t')
 
-augmented_irony_data = augment_dataframe_for_class(data, 'implicit_class', 'irony', 1100)
-augmented_inferiority_data = augment_dataframe_for_class(data, 'implicit_class', 'inferiority', 1100)
 augmented_other_data = augment_dataframe_for_class(data, 'implicit_class', 'other', 1100)
-augmented_threatening_data = augment_dataframe_for_class(data, 'implicit_class', 'threatening', 1100)
-augmented_explicit_data = augment_dataframe_for_class(data, 'implicit_or_explicit', 'explicit_hate', 5000)
+augmented_explicit_data = augment_dataframe_for_class(data, 'implicit_or_explicit', 'explicit_hate', 6300)
 
-final_df = pd.concat([data, augmented_inferiority_data, augmented_irony_data, augmented_explicit_data,
-                      augmented_other_data, augmented_threatening_data], ignore_index=True)
+final_df = pd.concat([data, augmented_explicit_data, augmented_other_data], ignore_index=True)
 
-final_df.to_csv('augmented_dataset.tsv', sep='\t', index=False)
+final_df.to_csv('final_augmented_dataset.tsv', sep='\t', index=False)
 
 # Place this line at the statement you're interested in
 elapsed_time = time.time() - start_time
