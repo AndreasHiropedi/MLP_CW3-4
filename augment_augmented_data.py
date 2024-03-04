@@ -36,7 +36,7 @@ def augment_dataframe_for_class(df, class_name, class_value, target_count, text_
 
     augmented_rows = []
     rows_count = 0
-    while len(augmented_rows) < target_count - len(class_data) and rows_count <= amount_of_data:
+    while len(augmented_rows) < target_count - len(class_data) or rows_count <= amount_of_data:
         for _, row in class_data.iterrows():
             if len(augmented_rows) >= target_count - len(class_data):
                 break
