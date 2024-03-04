@@ -61,9 +61,8 @@ start_time = time.time()
 data = pd.read_csv('new_augmented_data.tsv', delimiter='\t')
 
 augmented_other_data = augment_dataframe_for_class(data, 'implicit_class', 'other', 1100)
-augmented_explicit_data = augment_dataframe_for_class(data, 'implicit_or_explicit', 'explicit_hate', 6300)
 
-final_df = pd.concat([data, augmented_explicit_data, augmented_other_data], ignore_index=True)
+final_df = pd.concat([data, augmented_other_data], ignore_index=True)
 
 final_df.to_csv('final_augmented_dataset.tsv', sep='\t', index=False)
 
