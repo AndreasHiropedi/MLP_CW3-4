@@ -20,3 +20,13 @@ Evaluation Results for Implicit versus Explicit:
 'eval_steps_per_second': 2.448,
 'epoch': 3.0}
 
+Evaluation Results for Implicit Hate Types:
+{'eval_loss': 0.9382873773574829,
+'eval_accuracy': 0.784,
+'eval_f1': array([0.26395939, 0.67383513, 0.68876611, 0.95475113, 0.34299517, 0.79349593, 0.37807183, 0.8745182 ]),
+'eval_precision': array([0.37410072, 0.66197183, 0.74501992, 0.9254386 , 0.38586957, 0.79220779, 0.40160643, 0.84918215]),
+'eval_recall': array([0.20392157, 0.68613139, 0.64041096, 0.98598131, 0.30869565, 0.79478827, 0.35714286, 0.9014126 ]),
+'eval_runtime': 88.2686,
+'eval_samples_per_second': 59.478,
+'eval_steps_per_second': 7.443,
+'epoch': 3.0}
