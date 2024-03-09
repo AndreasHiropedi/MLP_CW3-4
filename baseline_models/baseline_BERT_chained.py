@@ -43,7 +43,7 @@ def compute_metrics(pred):
 start_time = time.time()
 
 # Load the dataset
-data = pd.read_csv('implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
+data = pd.read_csv('../datasets/implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
 
 ######################################### Classifier 1 #########################################
 

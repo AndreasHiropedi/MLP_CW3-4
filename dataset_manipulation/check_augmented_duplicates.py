@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the dataset
-data = pd.read_csv('final_augmented_dataset.tsv', delimiter='\t')
+data = pd.read_csv('../datasets/final_augmented_dataset.tsv', delimiter='\t')
 
 irony_data = data[data['implicit_class'] == 'irony']
 other_data = data[data['implicit_class'] == 'other']

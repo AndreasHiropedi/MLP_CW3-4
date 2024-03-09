@@ -7,7 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 
 ######################################### Classifier 1 #########################################
 
-data_c1 = pd.read_csv("implicit_hate_v1_stg0_posts.tsv", delimiter='\t')
+data_c1 = pd.read_csv("../datasets/implicit_hate_v1_stg0_posts.tsv", delimiter='\t')
 
 # Encode the labels
 label_encoder_hate = LabelEncoder()
@@ -46,7 +46,7 @@ print()
 
 ######################################### Classifier 2 #########################################
 
-data_c2 = pd.read_csv("implicit_hate_v1_stg1_posts.tsv", delimiter='\t')
+data_c2 = pd.read_csv("../datasets/implicit_hate_v1_stg1_posts.tsv", delimiter='\t')
 
 # Remove rows with label 'not_hate'
 data_c2 = data_c2[data_c2['class'] != 'not_hate'].dropna()
@@ -88,7 +88,7 @@ print()
 
 ######################################### Classifier 3 #########################################
 
-data_c3 = pd.read_csv("implicit_hate_v1_stg2_posts.tsv", delimiter='\t')
+data_c3 = pd.read_csv("../datasets/implicit_hate_v1_stg2_posts.tsv", delimiter='\t')
 
 # Encode the labels
 label_encoder_implicit_types = LabelEncoder()

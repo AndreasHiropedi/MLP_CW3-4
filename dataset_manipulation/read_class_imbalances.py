@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the dataset
-data = pd.read_csv('implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
+data = pd.read_csv('../datasets/implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
 
 # Calculate counts for unique values excluding NaN for each of the remaining columns
 unique_value_counts = {column: data[column].dropna().value_counts() for column in data.columns if column != 'post' and column != 'extra_implicit_class'}

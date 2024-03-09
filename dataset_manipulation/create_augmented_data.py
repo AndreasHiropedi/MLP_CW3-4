@@ -52,7 +52,7 @@ def augment_dataframe_for_class(df, class_name, class_value, target_count, text_
 start_time = time.time()
 
 # Load the dataset
-data = pd.read_csv('implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
+data = pd.read_csv('../datasets/implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
 
 augmented_irony_data = augment_dataframe_for_class(data, 'implicit_class', 'irony', 1100)
 augmented_inferiority_data = augment_dataframe_for_class(data, 'implicit_class', 'inferiority', 1100)

@@ -4,8 +4,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import matplotlib.pyplot as plt
 
 # Load the datasets
-full_data = pd.read_csv('final_augmented_dataset.tsv', delimiter='\t')
-normal_data = pd.read_csv('implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
+full_data = pd.read_csv('../datasets/final_augmented_dataset.tsv', delimiter='\t')
+normal_data = pd.read_csv('../datasets/implicit_hate_v1_stg0-2_posts.tsv', delimiter='\t')
 
 # Split off augmented data
 

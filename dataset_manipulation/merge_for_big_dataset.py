@@ -1,10 +1,10 @@
 import pandas as pd
 
-df_stg0 = pd.read_csv("implicit_hate_v1_stg0_posts.tsv", delimiter='\t')
+df_stg0 = pd.read_csv("../datasets/implicit_hate_v1_stg0_posts.tsv", delimiter='\t')
 
-df_stg1 = pd.read_csv("implicit_hate_v1_stg1_posts.tsv", delimiter='\t')
+df_stg1 = pd.read_csv("../datasets/implicit_hate_v1_stg1_posts.tsv", delimiter='\t')
 
-df_stg2 = pd.read_csv("implicit_hate_v1_stg2_posts.tsv", delimiter='\t')
+df_stg2 = pd.read_csv("../datasets/implicit_hate_v1_stg2_posts.tsv", delimiter='\t')
 
 # Add implicit versus explicit to hate/ no hate data
 merged_stg0_stg1 = pd.merge(df_stg0, df_stg1, on='post', how='left')

@@ -49,7 +49,7 @@ start_time = time.time()
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 # Data
-data_1 = pd.read_csv("implicit_hate_v1_stg0_posts.tsv", delimiter='\t')
+data_1 = pd.read_csv("../datasets/implicit_hate_v1_stg0_posts.tsv", delimiter='\t')
 
 # Encode the labels
 label_encoder_hate = LabelEncoder()
@@ -107,7 +107,7 @@ print("Evaluation Results for Hate vs. Not Hate:", evaluation_results)
 ######################################### Classifier 2 #########################################
 
 # Data
-data_2 = pd.read_csv("implicit_hate_v1_stg1_posts.tsv", delimiter='\t')
+data_2 = pd.read_csv("../datasets/implicit_hate_v1_stg1_posts.tsv", delimiter='\t')
 
 # Encode the labels
 label_encoder_hate_type = LabelEncoder()
@@ -165,7 +165,7 @@ print("Evaluation Results for Explicit Hate vs. Implicit Hate:", evaluation_resu
 ######################################### Classifier 3 #########################################
 
 # Data
-data_3 = pd.read_csv("implicit_hate_v1_stg2_posts.tsv", delimiter='\t')
+data_3 = pd.read_csv("../datasets/implicit_hate_v1_stg2_posts.tsv", delimiter='\t')
 # Encode the labels
 label_encoder_implicit_type = LabelEncoder()
 data_3['implicit_types_encoded'] = label_encoder_implicit_type.fit_transform(data_3['implicit_class'])
