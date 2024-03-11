@@ -1,0 +1,32 @@
+Evaluation Results for Hate versus Not Hate:
+{'eval_loss': 1.5017402172088623,
+ 'eval_accuracy': 0.7579047679901123,
+  'eval_f1': 0.7507354383212396, 
+  'eval_precision': 0.7828220725059509, 
+  'eval_recall': 0.7211756110191345, 
+  'eval_runtime': 134.83841180801392, 
+  'eval_samples_per_second': 38.93549271015645, 
+  'epoch': 20
+}
+
+Evaluation Results for Implicit vs Explicit:
+{'eval_loss': 0.5391164422035217, 
+ 'eval_accuracy': 0.8722993731498718, 
+ 'eval_f1': 0.9084370677731674, 
+ 'eval_precision': 0.9127293229103088, 
+ 'eval_recall': 0.9041849970817566, 
+ 'eval_runtime': 68.72463297843933, 
+ 'eval_samples_per_second': 37.715734339580635, 
+ 'epoch': 20
+}
+
+Evaluation Results for Type of Implicit HS:
+{'eval_loss': 1.6297565698623657,
+ 'eval_accuracy': 0.65451580286026,
+ 'eval_f1': 0.6455490100596167,
+ 'eval_precision': 0.644229217497886,
+ 'eval_recall': 0.6531491950096866, 
+ 'eval_runtime': 47.22596096992493, 
+ 'eval_samples_per_second': 38.91927156697775, 
+ 'epoch': 20
+}
