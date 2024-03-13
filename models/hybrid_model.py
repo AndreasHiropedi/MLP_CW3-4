@@ -161,7 +161,7 @@ val_loader = DataLoader(val_dataset, batch_size=8)
 model = HierarchicalClassifier().to(device)
 optimizer = AdamW(model.parameters(), lr=5e-5)
 
-num_epochs = 20
+num_epochs = 5
 
 # Create a loss function instance outside the loop to avoid recreating it every time
 loss_fn = nn.CrossEntropyLoss()
