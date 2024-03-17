@@ -18,22 +18,37 @@ class HierarchicalClassifier(nn.Module):
         self.bert = BertModel.from_pretrained(bert_model_name)
 
         bert_output_size = self.bert.config.hidden_size
-        self.stage1_classifier = nn.Linear(bert_output_size, 2)  # 2 classes for stage 1
+
+        # Convolutional layer for feature extraction
+        self.conv = nn.Conv1d(bert_output_size, 64, kernel_size=3, padding=1)
+        # ReLU activation function
+        self.relu = nn.ReLU()
+
+        self.stage1_classifier = nn.Linear(64, 2)  # 2 classes for stage 1
 
         # Embedding layers for predictions to bring them to the same dimensional space as BERT output
         self.prediction_embedding_stage1 = nn.Embedding(2, bert_output_size)  # 2 classes from stage 1
         self.prediction_embedding_stage2 = nn.Embedding(2, bert_output_size)  # 2 classes from stage 2
 
         # Classifiers for stage 2 and 3 after prediction embedding concatenation
-        self.stage2_classifier = nn.Linear(bert_output_size * 2, num_classes_stage2)  # 2 classes for stage 2
-        self.stage3_classifier = nn.Linear(bert_output_size * 2, num_classes_stage3)  # 7 classes for stage 3
+        #here
+        self.stage2_classifier = nn.Linear(64 + bert_output_size, num_classes_stage2)  # 2 classes for stage 2
+        #here
+        self.stage3_classifier = nn.Linear(64 + bert_output_size, num_classes_stage3)  # 7 classes for stage 3
 
         self.dropout = nn.Dropout(0.1)
+        self.softmax = nn.LogSoftmax(dim=1)
 
     def forward(self, input_ids, attention_mask):
         # BERT processing
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        pooled_output = outputs.pooler_output
+        last_hidden_state = outputs.last_hidden_state.permute(0, 2, 1)  # Swap dimensions for Conv1d
+        # Convolutional layer
+        conv_output = self.conv(last_hidden_state)
+        conv_output = self.relu(conv_output)
+
+        # Global Max Pooling
+        pooled_output, _ = torch.max(conv_output, dim=2)
 
         # Stage 1 classification
         stage1_output = self.stage1_classifier(pooled_output)
@@ -43,7 +58,7 @@ class HierarchicalClassifier(nn.Module):
         stage1_feature_embedded = self.prediction_embedding_stage1(stage1_pred)
 
         # Concatenate for stage 2 input
-        concatenated_features_stage2 = torch.cat((pooled_output, stage1_feature_embedded), dim=1)
+        concatenated_features_stage2 = torch.cat((pooled_output, stage1_feature_embedded), dim=1) #pooled should be conv
         stage2_output = self.stage2_classifier(self.dropout(concatenated_features_stage2))
 
         # Stage 2 prediction to binary feature and embed for stage 3
@@ -51,11 +66,11 @@ class HierarchicalClassifier(nn.Module):
         stage2_feature_embedded = self.prediction_embedding_stage2(stage2_pred)
 
         # Concatenate for stage 3 input
-        concatenated_features_stage3 = torch.cat((pooled_output, stage2_feature_embedded), dim=1)
+        concatenated_features_stage3 = torch.cat((pooled_output, stage2_feature_embedded), dim=1) #pooled should be conv
         stage3_output = self.stage3_classifier(self.dropout(concatenated_features_stage3))
 
-        return stage1_output, stage2_output, stage3_output
-
+        softmax1, softmax2, softmax3 = self.softmax(stage1_output), self.softmax(stage2_output), self.softmax(stage3_output)
+        return softmax1, softmax2, softmax3 
 
 class TextDataset(Dataset):
     def __init__(self, tokenizer, texts, labels_stage1, labels_stage2, labels_stage3):
@@ -132,7 +147,7 @@ start_time = time.time()
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 # Load dataset
-data = pd.read_csv('../datasets/final_augmented_dataset.tsv', sep='\t')
+data = pd.read_csv('./datasets/final_augmented_dataset.tsv', sep='\t')
 
 # Stage 1 does not depend on previous stages, so you can directly encode
 le_stage1 = LabelEncoder()
